@@ -8,13 +8,16 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.springframework.stereotype.Component;
-import sio.tp1.Repository.SecteurRepository;
+import sio.tp1.Entity.Rayon;
+import sio.tp1.Entity.Secteur;
 import sio.tp1.Services.EmployeService;
+import sio.tp1.Services.RayonService;
 import sio.tp1.Services.SecteurService;
+import sio.tp1.dto.EmployeRayon;
 
 
 import java.net.URL;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.ResourceBundle;
 
 @Component
@@ -26,13 +29,14 @@ public class TP1Controller implements Initializable
     //recuperation
     private SecteurService secteurService;
     private EmployeService employeService;
+    private RayonService rayonService;
 
     @FXML
     private TableColumn tcNomSecteur;
     @FXML
-    private TableView tvRayons;
+    private TableView<Rayon> tvRayons;
     @FXML
-    private TableView tvEmployesRayon;
+    private TableView<EmployeRayon> tvEmployesRayon;
     @FXML
     private TableColumn tcNumeroEmployeAll;
     @FXML
@@ -46,7 +50,7 @@ public class TP1Controller implements Initializable
     @FXML
     private TableColumn tcNomRayon;
     @FXML
-    private TableView tvSecteurs;
+    private TableView<Secteur> tvSecteurs;
     @FXML
     private TableColumn tcNomEmployeAll;
     @FXML
@@ -68,9 +72,10 @@ public class TP1Controller implements Initializable
 
 
     //constructeur pour recuperer les fonction dans services
-    public TP1Controller(SecteurService secteurService, EmployeService employeService) {
+    public TP1Controller(SecteurService secteurService, EmployeService employeService,RayonService rayonService) {
         this.secteurService = secteurService;
         this.employeService = employeService;
+        this.rayonService = rayonService;
     }
 
     @Override
@@ -86,9 +91,9 @@ public class TP1Controller implements Initializable
         tcNumeroRayon.setCellValueFactory(new PropertyValueFactory<>("id"));
         tcNomRayon.setCellValueFactory(new PropertyValueFactory<>("nomRayon"));
 
-        tcNumeroEmployeRayon.setCellValueFactory(new PropertyValueFactory<>("employeId"));
-        tcNomEmployeRayon.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        tcDateEmployeRayon.setCellValueFactory(new PropertyValueFactory<>("date"));
+        tcNumeroEmployeRayon.setCellValueFactory(new PropertyValueFactory<>("idEmploye"));
+        tcNomEmployeRayon.setCellValueFactory(new PropertyValueFactory<>("nomEmploye"));
+        tcDateEmployeRayon.setCellValueFactory(new PropertyValueFactory<>("dateRayon"));
         tcHeureEmployeRayon.setCellValueFactory(new PropertyValueFactory<>("temps"));
 
         tcNumeroEmployeAll.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -102,13 +107,17 @@ public class TP1Controller implements Initializable
     @FXML
     public void tvSecteursClicked(Event event)
     {
+        List<Rayon> rayonParSecteur = rayonService.getAllRayonsByIdSecteur(tvSecteurs.getSelectionModel().getSelectedItem().getId());
+        tvRayons.setItems(FXCollections.observableArrayList(rayonParSecteur));
 
     }
 
     @FXML
     public void tvRayonsClicked(Event event)
     {
-
+        int idRayonSelected = tvRayons.getSelectionModel().getSelectedItem().getId();
+        List<EmployeRayon> employeRayon = employeService.getAllEmployeesByRayonId(idRayonSelected);
+        tvEmployesRayon.setItems(FXCollections.observableArrayList(employeRayon));
     }
 
     @FXML
