@@ -10,5 +10,7 @@ open module sio.tp1 {
     requires jakarta.persistence;
     requires org.hibernate.orm.core;
     requires spring.data.commons;
+    requires spring.tx;
+//    requires jakarta.transaction;
 
 }
